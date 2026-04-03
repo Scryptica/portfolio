@@ -24,6 +24,10 @@ import Window from './Window.astro';
           <Icon name="mdi:github" size={16} />
           GitHub
         </a>
+        <span class="social-link time-chip">
+          <Icon name="mdi:clock-outline" size={16} />
+          <span id="spain-time">--:--:--</span>
+        </span>
       </div>
     </div>
   </div>
@@ -69,6 +73,20 @@ import Window from './Window.astro';
       transformOrigin: '70% 70%',
     });
   }
+
+  function updateSpainTime() {
+    const el = document.getElementById('spain-time');
+    if (el) {
+      el.textContent = new Date().toLocaleTimeString('es-ES', {
+        timeZone: 'Europe/Madrid',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    }
+  }
+  updateSpainTime();
+  setInterval(updateSpainTime, 1000);
 </script>
 
 <style>
@@ -129,6 +147,10 @@ import Window from './Window.astro';
 
   .social-link:hover {
     background: rgba(122, 168, 212, 0.3);
+  }
+
+  .time-chip {
+    cursor: default;
   }
 
   /* Win98 divider */

@@ -1,0 +1,76 @@
+<div class="particles" aria-hidden="true">
+  {Array.from({ length: 12 }).map((_, i) => (
+    <div class={`particle ${i % 2 === 0 ? 'star' : 'bubble'}`} />
+  ))}
+</div>
+
+<script>
+  import { gsap } from 'gsap';
+
+  const particles = document.querySelectorAll('.particle');
+
+  particles.forEach((particle) => {
+    const size = gsap.utils.random(3, 12);
+    const startX = gsap.utils.random(0, 100);
+    const el = particle as HTMLElement;
+
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    el.style.left = `${startX}%`;
+
+    gsap.set(el, { y: window.innerHeight + 20, opacity: 0 });
+
+    const animate = () => {
+      gsap.set(el, {
+        y: window.innerHeight + 20,
+        x: gsap.utils.random(-30, 30),
+        opacity: 0,
+      });
+
+      gsap.to(el, {
+        y: -50,
+        x: `+=${gsap.utils.random(-40, 40)}`,
+        rotation: gsap.utils.random(0, 360),
+        opacity: gsap.utils.random(0.3, 0.6),
+        duration: gsap.utils.random(15, 24),
+        ease: 'none',
+        onComplete: animate,
+        onUpdate: function () {
+          const progress = this.progress();
+          if (progress < 0.1) {
+            el.style.opacity = String(progress * 6);
+          } else if (progress > 0.9) {
+            el.style.opacity = String((1 - progress) * 6);
+          }
+        },
+      });
+    };
+
+    gsap.delayedCall(gsap.utils.random(0, 10), animate);
+  });
+</script>
+
+<style>
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .particle.star {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.7), rgba(168, 200, 232, 0.3));
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+  }
+
+  .particle.bubble {
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), rgba(168, 200, 232, 0.15));
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+</style>

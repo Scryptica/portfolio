@@ -1,17 +1,248 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import Particles from '../components/Particles.astro';
+import DiscordStatus from '../components/DiscordStatus.astro';
+import MusicPlayer from '../components/MusicPlayer.astro';
+import Hero from '../components/Hero.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Scryptica ☆">
+  <div id="intro" aria-label="Click to enter">
+    <div class="intro-window">
+      <div class="intro-titlebar">
+        <span class="intro-titlebar-text">☆ Scryptica's Portfolio</span>
+        <div class="intro-title-buttons">
+          <div class="intro-title-btn" aria-hidden="true">&#8722;</div>
+          <div class="intro-title-btn" aria-hidden="true">&#9633;</div>
+          <div class="intro-title-btn" aria-hidden="true">&#215;</div>
+        </div>
+      </div>
+      <div class="intro-body">
+        <div class="intro-stars" aria-hidden="true">- - - ☆ - - -</div>
+        <p class="intro-label">click to enter</p>
+      </div>
+    </div>
+  </div>
+  <Particles />
+  <main class="content">
+    <aside class="sidebar">
+      <DiscordStatus />
+      <MusicPlayer />
+    </aside>
+    <section class="main-window">
+      <Hero />
+    </section>
+  </main>
+</Layout>
+
+<style>
+  #intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background-color: var(--color-bg);
+    background-image:
+      linear-gradient(var(--color-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .intro-window {
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid var(--color-glass-border);
+    box-shadow:
+      4px 4px 16px var(--color-glass-shadow),
+      inset 0 0 0 1px var(--color-glass-inner);
+    min-width: 300px;
+    pointer-events: none;
+    animation: intro-float 3s ease-in-out infinite;
+  }
+
+  .intro-titlebar {
+    background: linear-gradient(90deg, var(--color-title-bar-start), var(--color-title-bar-end));
+    padding: 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .intro-titlebar-text {
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  .intro-title-buttons {
+    display: flex;
+    gap: 3px;
+  }
+
+  .intro-title-btn {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(140, 170, 210, 0.5);
+    width: 18px;
+    height: 16px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 16px;
+    border-radius: 1px;
+    color: var(--color-body);
+  }
+
+  .intro-body {
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .intro-stars {
+    font-size: 11px;
+    color: var(--color-secondary);
+    letter-spacing: 3px;
+    opacity: 0.6;
+  }
+
+  .intro-label {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--color-primary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    animation: intro-pulse 2s ease-in-out infinite;
+  }
+
+
+  @keyframes intro-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+  }
+
+  @keyframes intro-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 20px;
+    max-width: 970px;
+    margin: 0 auto;
+    padding: 0 24px;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .sidebar {
+    flex-shrink: 0;
+    width: 270px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .main-window {
+    flex: 1;
+    min-width: 0;
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      flex-direction: column;
+      padding: 24px 16px;
+      align-items: stretch;
+      height: auto;
+      overflow: visible;
+    }
+    .sidebar {
+      width: 100%;
+      order: 2;
+      flex-direction: row;
+    }
+    .sidebar > :global(*) {
+      flex: 1;
+      min-width: 0;
+    }
+    .main-window {
+      order: 1;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .sidebar {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  // Hide main content immediately so there's no flash before the intro is dismissed.
+  gsap.set('.sidebar', { x: -60, scale: 0.85, autoAlpha: 0 });
+  gsap.set('.main-window', { x: 60, scale: 0.85, autoAlpha: 0 });
+  gsap.set('[data-animate]', { y: 12, opacity: 0 });
+
+  const intro = document.getElementById('intro') as HTMLElement;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function enterProfile() {
+    document.dispatchEvent(new Event('profile:enter'));
+
+    if (reducedMotion) {
+      gsap.set(['.sidebar', '.main-window'], { x: 0, scale: 1, autoAlpha: 1 });
+      gsap.set('[data-animate]', { y: 0, opacity: 1 });
+      return;
+    }
+
+    const tl = gsap.timeline();
+
+    tl.to('.sidebar', {
+      x: 0, scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(1.4)',
+    }, 0.1);
+
+    tl.to('.main-window', {
+      x: 0, scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(1.4)',
+    }, 0.25);
+
+    tl.to('.sidebar [data-animate]', {
+      y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', stagger: 0.08,
+    }, 0.5);
+
+    tl.to('.main-window [data-animate]', {
+      y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', stagger: 0.08,
+    }, 0.65);
+  }
+
+  function dismissIntro() {
+    if (reducedMotion) {
+      intro.style.display = 'none';
+      enterProfile();
+      return;
+    }
+    gsap.to(intro, {
+      autoAlpha: 0,
+      duration: 0.5,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        intro.style.display = 'none';
+        enterProfile();
+      },
+    });
+  }
+
+  intro.addEventListener('click', dismissIntro, { once: true });
+</script>

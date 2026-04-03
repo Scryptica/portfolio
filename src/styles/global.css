@@ -1,0 +1,59 @@
+:root {
+  /* Colors */
+  --color-bg: #c0d4ed;
+  --color-grid: rgba(150, 180, 220, 0.35);
+  --color-primary: #3a5a8a;
+  --color-secondary: #5a7a9a;
+  --color-body: #4a6a8a;
+  --color-title-bar-start: #7aa8d4;
+  --color-title-bar-end: #a8c8e8;
+  --color-glass-bg: rgba(255, 255, 255, 0.55);
+  --color-glass-border: rgba(140, 170, 210, 0.5);
+  --color-glass-shadow: rgba(100, 140, 200, 0.2);
+  --color-glass-inner: rgba(255, 255, 255, 0.4);
+
+  /* Spacing */
+  --grid-size: 32px;
+  --window-max-width: 680px;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Tahoma, 'Segoe UI', sans-serif;
+  background-color: var(--color-bg);
+  background-image:
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(210, 225, 245, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(190, 210, 240, 0.3) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}

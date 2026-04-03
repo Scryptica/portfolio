@@ -1,0 +1,131 @@
+---
+import { Icon } from 'astro-icon/components';
+import Window from './Window.astro';
+---
+
+<Window title="Discord">
+  <Fragment slot="title">
+    <Icon name="mdi:discord" size={14} />
+    Discord
+  </Fragment>
+  <div class="discord-profile">
+    <div data-animate class="discord-avatar">
+      <img
+        src="https://avatars.githubusercontent.com/u/198969065?v=4"
+        alt="Discord avatar"
+        width="48"
+        height="48"
+      />
+      <div class="status-dot" id="status-dot"></div>
+    </div>
+    <div data-animate class="discord-info">
+      <span class="discord-name">Scryptica ☆</span>
+      <span class="discord-userid">ID: 1339294952202571938</span>
+      <span class="discord-status" id="discord-status">Checking...</span>
+    </div>
+  </div>
+</Window>
+
+<script>
+  // Replace with your Discord User ID
+  // To find it: Discord Settings > Advanced > Developer Mode > Right-click your profile > Copy User ID
+  const DISCORD_USER_ID = '1339294952202571938';
+
+  const statusDot = document.getElementById('status-dot');
+  const statusText = document.getElementById('discord-status');
+
+  const statusColors: Record<string, string> = {
+    online: '#43b581',
+    idle: '#faa61a',
+    dnd: '#f04747',
+    offline: '#747f8d',
+  };
+
+  const statusLabels: Record<string, string> = {
+    online: 'Online',
+    idle: 'Idle',
+    dnd: 'Do Not Disturb',
+    offline: 'Offline',
+  };
+
+  async function fetchStatus() {
+    try {
+      const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
+      const data = await res.json();
+
+      if (data.success) {
+        const status = data.data.discord_status as string;
+        if (statusDot) statusDot.style.backgroundColor = statusColors[status] || statusColors.offline;
+        if (statusText) statusText.textContent = statusLabels[status] || 'Offline';
+      } else {
+        if (statusDot) statusDot.style.backgroundColor = statusColors.offline;
+        if (statusText) statusText.textContent = 'Offline';
+      }
+    } catch {
+      if (statusDot) statusDot.style.backgroundColor = statusColors.offline;
+      if (statusText) statusText.textContent = 'Offline';
+    }
+  }
+
+  fetchStatus();
+  setInterval(fetchStatus, 60000);
+</script>
+
+<style>
+  .discord-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .discord-avatar {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .discord-avatar img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(122, 168, 212, 0.3);
+  }
+
+  .status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #747f8d;
+    border: 2.5px solid rgba(255, 255, 255, 0.55);
+    transition: background-color 0.3s;
+  }
+
+  .discord-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .discord-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--color-primary);
+  }
+
+  .discord-userid {
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    color: var(--color-secondary);
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .discord-status {
+    font-size: 11px;
+    color: var(--color-secondary);
+  }
+</style>

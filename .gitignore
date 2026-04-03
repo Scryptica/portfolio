@@ -25,3 +25,9 @@ pnpm-debug.log*
 
 # superpowers
 .superpowers
+
+# AI-generated docs
+docs/
+
+# editor config
+.vscode/

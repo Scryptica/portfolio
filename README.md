@@ -1,43 +1,34 @@
-# Astro Starter Kit: Minimal
+# Scryptica's Portfolio
 
-```sh
-npm create astro@latest -- --template minimal
+A personal portfolio website with a Windows 98-inspired aesthetic, built with Astro.
+
+## Features
+
+- Glassmorphism + Win98-style window components
+- Live Discord status via Lanyard API
+- Built-in music player with crossfade transitions
+- Floating particle effects powered by GSAP
+- Animated intro screen
+- Spain timezone clock
+- Fully responsive layout
+
+## Tech Stack
+
+- [Astro](https://astro.build)
+- [GSAP](https://gsap.com)
+- [astro-icon](https://github.com/natemoo-re/astro-icon)
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Music
 
-## 🚀 Project Structure
+Drop audio files (`.mp3`, `.ogg`, `.wav`, `.m4a`, `.flac`) into `public/music/` and they will be picked up automatically by the music player at build time.
 
-Inside of your Astro project, you'll see the following folders and files:
+## License
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+MIT
