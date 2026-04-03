@@ -28,7 +28,3 @@ npm run dev
 ## Music
 
 Drop audio files (`.mp3`, `.ogg`, `.wav`, `.m4a`, `.flac`) into `public/music/` and they will be picked up automatically by the music player at build time.
-
-## License
-
-MIT
