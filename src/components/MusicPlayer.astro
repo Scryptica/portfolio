@@ -42,7 +42,7 @@ if (fs.existsSync(musicDir)) {
         id="volume-slider"
         min="0"
         max="100"
-        value="10"
+        value="5"
         class="volume-slider"
         aria-label="Volume"
       />
@@ -73,7 +73,7 @@ if (fs.existsSync(musicDir)) {
 
   let currentIndex = 0;
   let isPlaying = false;
-  let targetVolume = 0.1;
+  let targetVolume = 0.05;
   let fadeTimer: ReturnType<typeof setInterval> | null = null;
 
   // Tracks discovered at build time
