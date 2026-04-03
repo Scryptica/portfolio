@@ -42,7 +42,7 @@ if (fs.existsSync(musicDir)) {
         id="volume-slider"
         min="0"
         max="100"
-        value="20"
+        value="10"
         class="volume-slider"
         aria-label="Volume"
       />
@@ -73,7 +73,7 @@ if (fs.existsSync(musicDir)) {
 
   let currentIndex = 0;
   let isPlaying = false;
-  let targetVolume = 0.2;
+  let targetVolume = 0.1;
   let fadeTimer: ReturnType<typeof setInterval> | null = null;
 
   // Tracks discovered at build time
@@ -194,6 +194,12 @@ if (fs.existsSync(musicDir)) {
     audio.volume = targetVolume;
     loadTrack(0);
     document.addEventListener('profile:enter', () => play(), { once: true });
+  }
+
+  // Hide volume slider on iOS (volume is read-only)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    document.querySelector('.volume-row')?.remove();
   }
 
   // Controls
