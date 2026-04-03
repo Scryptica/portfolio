@@ -135,15 +135,18 @@ if (fs.existsSync(musicDir)) {
 
   function fadeOut(callback: () => void) {
     if (fadeTimer) clearInterval(fadeTimer);
-    const step = audio.volume / FADE_STEPS;
+    if (audio.volume <= 0) { callback(); return; }
+    const startVol = audio.volume;
+    let tick = 0;
     fadeTimer = setInterval(() => {
-      if (audio.volume > step) {
-        audio.volume = Math.max(0, audio.volume - step);
-      } else {
+      tick++;
+      if (tick >= FADE_STEPS) {
         audio.volume = 0;
         clearInterval(fadeTimer!);
         fadeTimer = null;
         callback();
+      } else {
+        audio.volume = startVol * (1 - tick / FADE_STEPS);
       }
     }, FADE_MS / FADE_STEPS);
   }
@@ -151,14 +154,15 @@ if (fs.existsSync(musicDir)) {
   function fadeIn() {
     if (fadeTimer) clearInterval(fadeTimer);
     audio.volume = 0;
-    const step = targetVolume / FADE_STEPS;
+    let tick = 0;
     fadeTimer = setInterval(() => {
-      if (audio.volume < targetVolume - step) {
-        audio.volume = Math.min(targetVolume, audio.volume + step);
-      } else {
+      tick++;
+      if (tick >= FADE_STEPS) {
         audio.volume = targetVolume;
         clearInterval(fadeTimer!);
         fadeTimer = null;
+      } else {
+        audio.volume = targetVolume * (tick / FADE_STEPS);
       }
     }, FADE_MS / FADE_STEPS);
   }
