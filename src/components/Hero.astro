@@ -1,0 +1,184 @@
+---
+import { Icon } from 'astro-icon/components';
+import Window from './Window.astro';
+---
+
+<Window title="☆ Scryptica's Portfolio">
+  <!-- Hero -->
+  <div class="hero-content">
+    <img
+      data-animate
+      class="avatar"
+      src="https://avatars.githubusercontent.com/u/198969065?v=4"
+      alt="Scryptica's avatar"
+      width="80"
+      height="80"
+    />
+    <div class="hero-text">
+      <h1 data-animate>
+        Scryptica ☆ <span class="wave" aria-label="waving hand">👋</span>
+      </h1>
+      <p data-animate class="subtitle">Welcome to my corner of the internet</p>
+      <div data-animate class="social-links">
+        <a href="https://github.com/Scryptica" target="_blank" rel="noopener noreferrer" class="social-link">
+          <Icon name="mdi:github" size={16} />
+          GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Win98 separator -->
+  <hr data-animate class="win98-divider" />
+
+  <!-- About Me -->
+  <div data-animate class="about-header">
+    <Icon name="mdi:folder-open" size={14} />
+    <span>C:\Users\Scryptica\about_me.txt</span>
+  </div>
+  <div data-animate class="about-text">
+    <p class="about-deco">─── ･ ｡ﾟ☆: *.☽ .* :☆ﾟ. ───</p>
+    <p>
+      Hey! I am Scryptica ~ a hobby programmer who enjoys developing
+      cool websites and backend services.
+      I am always ready to experiment and create new projects from scratch.
+      Oh, and I have a slight obsession with <span class="cc-domain">.cc domains</span>... don't judge me.
+      Quality and design are always my top priorities.
+    </p>
+    <p class="about-deco">─── ･ ｡ﾟ☆: *.☽ .* :☆ﾟ. ───</p>
+  </div>
+</Window>
+
+<script>
+  import { gsap } from 'gsap';
+
+  const wave = document.querySelector('.wave');
+  if (wave) {
+    gsap.to(wave, {
+      keyframes: [
+        { rotation: 14, duration: 0.15 },
+        { rotation: -8, duration: 0.15 },
+        { rotation: 14, duration: 0.15 },
+        { rotation: -4, duration: 0.15 },
+        { rotation: 10, duration: 0.15 },
+        { rotation: 0, duration: 0.3 },
+      ],
+      ease: 'power1.inOut',
+      repeat: -1,
+      repeatDelay: 1.5,
+      transformOrigin: '70% 70%',
+    });
+  }
+</script>
+
+<style>
+  .hero-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid rgba(122, 168, 212, 0.4);
+    box-shadow: 0 4px 14px rgba(100, 150, 200, 0.25);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-size: 22px;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wave {
+    display: inline-block;
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--color-secondary);
+    margin-top: 4px;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .social-link {
+    background: rgba(122, 168, 212, 0.15);
+    border: 1px solid rgba(122, 168, 212, 0.3);
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--color-secondary);
+    text-decoration: none;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s;
+  }
+
+  .social-link:hover {
+    background: rgba(122, 168, 212, 0.3);
+  }
+
+  /* Win98 divider */
+  .win98-divider {
+    border: none;
+    border-top: 1px solid rgba(100, 140, 190, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+    margin: 20px 0;
+  }
+
+  /* About section */
+  .about-header {
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    color: var(--color-body);
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px inset rgba(120, 155, 200, 0.5);
+    padding: 4px 8px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .about-text p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-body);
+  }
+
+  .cc-domain {
+    color: var(--color-primary);
+    font-weight: bold;
+  }
+
+  .about-deco {
+    text-align: center;
+    font-size: 11px;
+    color: var(--color-title-bar-start);
+    opacity: 0.6;
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .avatar {
+      width: 60px;
+      height: 60px;
+    }
+    h1 {
+      font-size: 18px;
+    }
+  }
+</style>
