@@ -12,9 +12,66 @@
   --color-glass-shadow: rgba(100, 140, 200, 0.2);
   --color-glass-inner: rgba(255, 255, 255, 0.4);
 
+  /* Component colors (light) */
+  --color-btn-bg: rgba(255, 255, 255, 0.65);
+  --color-btn-border: rgba(140, 170, 210, 0.5);
+  --color-inset-bg: rgba(255, 255, 255, 0.5);
+  --color-inset-border: rgba(120, 155, 200, 0.5);
+  --color-social-bg: rgba(122, 168, 212, 0.15);
+  --color-social-border: rgba(122, 168, 212, 0.3);
+  --color-social-hover: rgba(122, 168, 212, 0.3);
+  --color-divider-top: rgba(100, 140, 190, 0.3);
+  --color-divider-bottom: rgba(255, 255, 255, 0.6);
+  --color-avatar-border: rgba(122, 168, 212, 0.4);
+  --color-avatar-shadow: rgba(100, 150, 200, 0.25);
+  --color-status-dot-border: rgba(255, 255, 255, 0.55);
+  --color-slider-track: rgba(140, 170, 210, 0.3);
+  --color-progress-bg: rgba(140, 170, 210, 0.25);
+  --color-progress-border: rgba(120, 155, 200, 0.4);
+  --color-ctrl-bg: rgba(255, 255, 255, 0.6);
+  --color-ctrl-border: rgba(140, 170, 210, 0.5);
+  --color-ctrl-hover: rgba(122, 168, 212, 0.25);
+  --color-radial-1: rgba(210, 225, 245, 0.4);
+  --color-radial-2: rgba(190, 210, 240, 0.3);
+
   /* Spacing */
   --grid-size: 32px;
   --window-max-width: 680px;
+}
+
+:root.dark {
+  --color-bg: #0f1923;
+  --color-grid: rgba(100, 140, 200, 0.12);
+  --color-primary: #8ab4e0;
+  --color-secondary: #6a9ac4;
+  --color-body: #7a9ab8;
+  --color-title-bar-start: #2a4a6a;
+  --color-title-bar-end: #3a5a7a;
+  --color-glass-bg: rgba(15, 25, 40, 0.75);
+  --color-glass-border: rgba(80, 120, 180, 0.35);
+  --color-glass-shadow: rgba(0, 0, 0, 0.4);
+  --color-glass-inner: rgba(80, 120, 180, 0.15);
+
+  --color-btn-bg: rgba(30, 50, 75, 0.65);
+  --color-btn-border: rgba(80, 120, 180, 0.5);
+  --color-inset-bg: rgba(10, 20, 35, 0.6);
+  --color-inset-border: rgba(60, 100, 160, 0.4);
+  --color-social-bg: rgba(40, 70, 110, 0.25);
+  --color-social-border: rgba(60, 100, 160, 0.3);
+  --color-social-hover: rgba(60, 100, 160, 0.4);
+  --color-divider-top: rgba(60, 100, 160, 0.3);
+  --color-divider-bottom: rgba(80, 120, 180, 0.15);
+  --color-avatar-border: rgba(80, 130, 190, 0.4);
+  --color-avatar-shadow: rgba(0, 0, 0, 0.35);
+  --color-status-dot-border: rgba(15, 25, 40, 0.75);
+  --color-slider-track: rgba(60, 100, 160, 0.35);
+  --color-progress-bg: rgba(60, 100, 160, 0.25);
+  --color-progress-border: rgba(60, 100, 160, 0.35);
+  --color-ctrl-bg: rgba(30, 50, 75, 0.6);
+  --color-ctrl-border: rgba(80, 120, 180, 0.4);
+  --color-ctrl-hover: rgba(60, 100, 160, 0.3);
+  --color-radial-1: rgba(20, 40, 70, 0.4);
+  --color-radial-2: rgba(15, 30, 55, 0.3);
 }
 
 *,
@@ -52,8 +109,8 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(210, 225, 245, 0.4) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 80%, rgba(190, 210, 240, 0.3) 0%, transparent 50%);
+    radial-gradient(ellipse at 30% 20%, var(--color-radial-1) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, var(--color-radial-2) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }

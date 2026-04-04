@@ -14,6 +14,16 @@ const { title } = Astro.props;
     <meta name="description" content="Scryptica's Portfolio" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>{title}</title>
+    <script is:inline>
+      (function() {
+        var now = new Date();
+        var madrid = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
+        var hour = madrid.getHours();
+        if (hour >= 0 && hour < 7) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <slot />
@@ -23,3 +33,95 @@ const { title } = Astro.props;
 <style>
   @import '../styles/global.css';
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  const THEME_VARS = [
+    '--color-bg', '--color-grid', '--color-primary', '--color-secondary',
+    '--color-body', '--color-title-bar-start', '--color-title-bar-end',
+    '--color-glass-bg', '--color-glass-border', '--color-glass-shadow',
+    '--color-glass-inner', '--color-btn-bg', '--color-btn-border',
+    '--color-inset-bg', '--color-inset-border', '--color-social-bg',
+    '--color-social-border', '--color-social-hover', '--color-divider-top',
+    '--color-divider-bottom', '--color-avatar-border', '--color-avatar-shadow',
+    '--color-status-dot-border', '--color-slider-track', '--color-progress-bg',
+    '--color-progress-border', '--color-ctrl-bg', '--color-ctrl-border',
+    '--color-ctrl-hover', '--color-radial-1', '--color-radial-2',
+    '--color-particle-star-shadow', '--color-particle-bubble-border',
+  ];
+
+  let activeTween: gsap.core.Tween | null = null;
+
+  function transitionTheme(toDark: boolean) {
+    const root = document.documentElement;
+
+    if (activeTween) {
+      activeTween.kill();
+      THEME_VARS.forEach(v => root.style.removeProperty(v));
+    }
+
+    // Read current computed values before class change
+    const from: Record<string, string> = {};
+    const computed = getComputedStyle(root);
+    THEME_VARS.forEach(v => {
+      from[v] = computed.getPropertyValue(v).trim();
+    });
+
+    // Apply target class so CSS knows the destination
+    root.classList.toggle('dark', toDark);
+
+    // Read target computed values after class change
+    const to: Record<string, string> = {};
+    const newComputed = getComputedStyle(root);
+    THEME_VARS.forEach(v => {
+      to[v] = newComputed.getPropertyValue(v).trim();
+    });
+
+    // Set inline styles to FROM values to prevent visual snap
+    THEME_VARS.forEach(v => root.style.setProperty(v, from[v]));
+
+    // Build GSAP target with all destination values
+    const gsapTarget: Record<string, string | number> = {};
+    THEME_VARS.forEach(v => { gsapTarget[v] = to[v]; });
+
+    activeTween = gsap.to(root, {
+      ...gsapTarget,
+      duration: 1.2,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        THEME_VARS.forEach(v => root.style.removeProperty(v));
+        activeTween = null;
+      },
+    });
+  }
+
+  // Schedule auto-switch at 00:00 (→dark) and 07:00 (→light) Madrid time
+  function scheduleAutoSwitch() {
+    const now = new Date();
+    const madrid = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
+    const hour = madrid.getHours();
+    const min = madrid.getMinutes();
+    const sec = madrid.getSeconds();
+
+    let msUntilSwitch: number;
+    let switchToDark: boolean;
+
+    if (hour >= 0 && hour < 7) {
+      // Currently in dark period → next switch at 07:00 → light
+      msUntilSwitch = ((6 - hour) * 3600 + (59 - min) * 60 + (60 - sec)) * 1000;
+      switchToDark = false;
+    } else {
+      // Currently in light period → next switch at 00:00 → dark
+      msUntilSwitch = ((23 - hour) * 3600 + (59 - min) * 60 + (60 - sec)) * 1000;
+      switchToDark = true;
+    }
+
+    setTimeout(() => {
+      transitionTheme(switchToDark);
+      scheduleAutoSwitch();
+    }, msUntilSwitch);
+  }
+
+  scheduleAutoSwitch();
+</script>

@@ -265,8 +265,8 @@ if (fs.existsSync(musicDir)) {
   }
 
   .player-display {
-    background: rgba(255, 255, 255, 0.5);
-    border: 2px inset rgba(120, 155, 200, 0.5);
+    background: var(--color-inset-bg);
+    border: 2px inset var(--color-inset-border);
     padding: 6px 8px;
     font-family: 'Courier New', monospace;
     font-size: 11px;
@@ -284,8 +284,8 @@ if (fs.existsSync(musicDir)) {
   }
 
   .ctrl-btn {
-    background: rgba(255, 255, 255, 0.6);
-    border: 1.5px solid rgba(140, 170, 210, 0.5);
+    background: var(--color-ctrl-bg);
+    border: 1.5px solid var(--color-ctrl-border);
     color: var(--color-body);
     width: 30px;
     height: 26px;
@@ -298,7 +298,7 @@ if (fs.existsSync(musicDir)) {
   }
 
   .ctrl-btn:hover {
-    background: rgba(122, 168, 212, 0.25);
+    background: var(--color-ctrl-hover);
   }
 
   .play-btn {
@@ -318,7 +318,7 @@ if (fs.existsSync(musicDir)) {
     height: 4px;
     appearance: none;
     -webkit-appearance: none;
-    background: rgba(140, 170, 210, 0.3);
+    background: var(--color-slider-track);
     border-radius: 2px;
     outline: none;
     cursor: pointer;
@@ -360,8 +360,8 @@ if (fs.existsSync(musicDir)) {
   .progress-bar {
     flex: 1;
     height: 6px;
-    background: rgba(140, 170, 210, 0.25);
-    border: 1px inset rgba(120, 155, 200, 0.4);
+    background: var(--color-progress-bg);
+    border: 1px inset var(--color-progress-border);
     cursor: pointer;
     position: relative;
   }
