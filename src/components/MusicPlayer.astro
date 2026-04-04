@@ -76,6 +76,37 @@ if (fs.existsSync(musicDir)) {
   let targetVolume = 0.05;
   let fadeTimer: ReturnType<typeof setInterval> | null = null;
 
+  // Web Audio API for cross-platform volume control (including iOS)
+  let audioCtx: AudioContext | null = null;
+  let gainNode: GainNode | null = null;
+
+  function ensureAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new AudioContext();
+      const source = audioCtx.createMediaElementSource(audio);
+      gainNode = audioCtx.createGain();
+      source.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      gainNode.gain.value = targetVolume;
+      audio.volume = 1; // Volume now controlled exclusively by GainNode
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function setVolume(val: number) {
+    if (gainNode) {
+      gainNode.gain.value = val;
+    } else {
+      audio.volume = val;
+    }
+  }
+
+  function getVolume(): number {
+    return gainNode ? gainNode.gain.value : audio.volume;
+  }
+
   // Tracks discovered at build time
   const allTracks: string[] = JSON.parse(player?.dataset.tracks || '[]');
 
@@ -115,6 +146,7 @@ if (fs.existsSync(musicDir)) {
   }
 
   function play() {
+    ensureAudioContext();
     const promise = audio.play();
     if (promise !== undefined) {
       promise
@@ -135,34 +167,34 @@ if (fs.existsSync(musicDir)) {
 
   function fadeOut(callback: () => void) {
     if (fadeTimer) clearInterval(fadeTimer);
-    if (audio.volume <= 0) { callback(); return; }
-    const startVol = audio.volume;
+    if (getVolume() <= 0) { callback(); return; }
+    const startVol = getVolume();
     let tick = 0;
     fadeTimer = setInterval(() => {
       tick++;
       if (tick >= FADE_STEPS) {
-        audio.volume = 0;
+        setVolume(0);
         clearInterval(fadeTimer!);
         fadeTimer = null;
         callback();
       } else {
-        audio.volume = startVol * (1 - tick / FADE_STEPS);
+        setVolume(startVol * (1 - tick / FADE_STEPS));
       }
     }, FADE_MS / FADE_STEPS);
   }
 
   function fadeIn() {
     if (fadeTimer) clearInterval(fadeTimer);
-    audio.volume = 0;
+    setVolume(0);
     let tick = 0;
     fadeTimer = setInterval(() => {
       tick++;
       if (tick >= FADE_STEPS) {
-        audio.volume = targetVolume;
+        setVolume(targetVolume);
         clearInterval(fadeTimer!);
         fadeTimer = null;
       } else {
-        audio.volume = targetVolume * (tick / FADE_STEPS);
+        setVolume(targetVolume * (tick / FADE_STEPS));
       }
     }, FADE_MS / FADE_STEPS);
   }
@@ -191,15 +223,8 @@ if (fs.existsSync(musicDir)) {
   if (allTracks.length === 0) {
     if (nowPlaying) nowPlaying.textContent = 'No tracks found';
   } else {
-    audio.volume = targetVolume;
     loadTrack(0);
     document.addEventListener('profile:enter', () => play(), { once: true });
-  }
-
-  // Hide volume slider on iOS (volume is read-only)
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  if (isIOS) {
-    document.querySelector('.volume-row')?.remove();
   }
 
   // Controls
@@ -208,7 +233,7 @@ if (fs.existsSync(musicDir)) {
   nextBtn?.addEventListener('click', nextTrack);
   volumeSlider?.addEventListener('input', () => {
     targetVolume = parseInt(volumeSlider.value) / 100;
-    audio.volume = targetVolume;
+    setVolume(targetVolume);
   });
 
   audio.addEventListener('timeupdate', () => {
