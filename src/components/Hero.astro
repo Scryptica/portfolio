@@ -24,10 +24,6 @@ import Window from './Window.astro';
           <Icon name="mdi:github" size={16} />
           GitHub
         </a>
-        <span class="social-link time-chip">
-          <Icon name="mdi:clock-outline" size={16} />
-          <span id="spain-time">--:--:--</span>
-        </span>
       </div>
     </div>
   </div>
@@ -50,6 +46,18 @@ import Window from './Window.astro';
       Quality and design are always my top priorities.
     </p>
     <p class="about-deco">─── ･ ｡ﾟ☆: *.☽ .* :☆ﾟ. ───</p>
+  </div>
+
+  <!-- Footer -->
+  <div data-animate class="hero-footer">
+    <span class="footer-chip">
+      <Icon name="mdi:clock-outline" size={14} />
+      <span id="spain-time">--:--:--</span>
+    </span>
+    <span class="footer-chip">
+      <Icon name="mdi:eye-outline" size={14} />
+      <span id="visitor-count">-</span>
+    </span>
   </div>
 </Window>
 
@@ -87,6 +95,21 @@ import Window from './Window.astro';
   }
   updateSpainTime();
   setInterval(updateSpainTime, 1000);
+
+  async function trackVisitor() {
+    try {
+      const res = await fetch('https://api.scryptica.cc/visitors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      const el = document.getElementById('visitor-count');
+      if (el) el.textContent = data.count.toLocaleString();
+    } catch {
+      // silent fail — visitor count is non-critical
+    }
+  }
+  trackVisitor();
 </script>
 
 <style>
@@ -149,10 +172,6 @@ import Window from './Window.astro';
     background: var(--color-social-hover);
   }
 
-  .time-chip {
-    cursor: default;
-  }
-
   /* Win98 divider */
   .win98-divider {
     border: none;
@@ -192,6 +211,25 @@ import Window from './Window.astro';
     color: var(--color-title-bar-start);
     opacity: 0.6;
     letter-spacing: 2px;
+  }
+
+  /* Footer */
+  .hero-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-divider-top);
+  }
+
+  .footer-chip {
+    font-size: 11px;
+    color: var(--color-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: default;
   }
 
   @media (max-width: 640px) {
