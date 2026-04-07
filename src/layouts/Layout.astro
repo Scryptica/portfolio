@@ -55,7 +55,6 @@ const { title } = Astro.props;
 
     if (activeTween) {
       activeTween.kill();
-      THEME_VARS.forEach(v => root.style.removeProperty(v));
     }
 
     // Read current computed values before class change
@@ -93,7 +92,15 @@ const { title } = Astro.props;
       duration: 1.2,
       ease: 'power2.inOut',
       onComplete: () => {
-        THEME_VARS.forEach(v => root.style.removeProperty(v));
+        // Keep runtime palette inline styles, only clear if no API palette loaded
+        const palette = toDark
+          ? (window as any).__darkPalette
+          : (window as any).__lightPalette;
+        if (palette) {
+          THEME_VARS.forEach(v => root.style.setProperty(v, palette[v] || ''));
+        } else {
+          THEME_VARS.forEach(v => root.style.removeProperty(v));
+        }
         activeTween = null;
       },
     });
