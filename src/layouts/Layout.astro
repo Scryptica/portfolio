@@ -16,10 +16,7 @@ const { title } = Astro.props;
     <title>{title}</title>
     <script is:inline>
       (function() {
-        var now = new Date();
-        var madrid = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
-        var hour = madrid.getHours();
-        if (hour >= 0 && hour < 7) {
+        if (localStorage.getItem('theme') === 'dark') {
           document.documentElement.classList.add('dark');
         }
       })();
@@ -71,12 +68,18 @@ const { title } = Astro.props;
     // Apply target class so CSS knows the destination
     root.classList.toggle('dark', toDark);
 
-    // Read target computed values after class change
+    // Use runtime palette if available, otherwise read from CSS
+    const runtimePalette = toDark
+      ? (window as any).__darkPalette
+      : (window as any).__lightPalette;
+
     const to: Record<string, string> = {};
-    const newComputed = getComputedStyle(root);
-    THEME_VARS.forEach(v => {
-      to[v] = newComputed.getPropertyValue(v).trim();
-    });
+    if (runtimePalette) {
+      THEME_VARS.forEach(v => { to[v] = runtimePalette[v] || getComputedStyle(root).getPropertyValue(v).trim(); });
+    } else {
+      const newComputed = getComputedStyle(root);
+      THEME_VARS.forEach(v => { to[v] = newComputed.getPropertyValue(v).trim(); });
+    }
 
     // Set inline styles to FROM values to prevent visual snap
     THEME_VARS.forEach(v => root.style.setProperty(v, from[v]));
@@ -96,32 +99,128 @@ const { title } = Astro.props;
     });
   }
 
-  // Schedule auto-switch at 00:00 (→dark) and 07:00 (→light) Madrid time
-  function scheduleAutoSwitch() {
-    const now = new Date();
-    const madrid = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
-    const hour = madrid.getHours();
-    const min = madrid.getMinutes();
-    const sec = madrid.getSeconds();
+  // Listen for theme toggle from the Window title bar button
+  window.addEventListener('theme:toggle', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    const newIsDark = !isDark;
+    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
+    transitionTheme(newIsDark);
+  });
 
-    let msUntilSwitch: number;
-    let switchToDark: boolean;
+  // --- Runtime palette from API ---
 
-    if (hour >= 0 && hour < 7) {
-      // Currently in dark period → next switch at 07:00 → light
-      msUntilSwitch = ((6 - hour) * 3600 + (59 - min) * 60 + (60 - sec)) * 1000;
-      switchToDark = false;
-    } else {
-      // Currently in light period → next switch at 00:00 → dark
-      msUntilSwitch = ((23 - hour) * 3600 + (59 - min) * 60 + (60 - sec)) * 1000;
-      switchToDark = true;
-    }
-
-    setTimeout(() => {
-      transitionTheme(switchToDark);
-      scheduleAutoSwitch();
-    }, msUntilSwitch);
+  function hsl(h: number, s: number, l: number) {
+    return `hsl(${Math.round(h)}, ${Math.round(s)}%, ${Math.round(l)}%)`;
+  }
+  function hsla(h: number, s: number, l: number, a: number) {
+    return `hsla(${Math.round(h)}, ${Math.round(s)}%, ${Math.round(l)}%, ${a})`;
   }
 
-  scheduleAutoSwitch();
+  function buildPalette(colors: { h: number; s: number; l: number }[]) {
+    const [dominant, secondary, accent] = colors;
+    const H = dominant.h;
+    const H2 = secondary.h;
+    const H3 = accent.h;
+    const S = Math.min(dominant.s, 70);
+
+    const light: Record<string, string> = {
+      '--color-bg':                    hsl(H, S * 0.6, 88),
+      '--color-grid':                  hsla(H, S * 0.5, 72, 0.35),
+      '--color-primary':               hsl(H, S * 0.7, 38),
+      '--color-secondary':             hsl(H, S * 0.5, 48),
+      '--color-body':                  hsl(H, S * 0.55, 42),
+      '--color-title-bar-start':       hsl(H, S * 0.55, 65),
+      '--color-title-bar-end':         hsl(H2, S * 0.45, 78),
+      '--color-glass-bg':              'rgba(255, 255, 255, 0.55)',
+      '--color-glass-border':          hsla(H, S * 0.5, 69, 0.5),
+      '--color-glass-shadow':          hsla(H, S * 0.6, 59, 0.2),
+      '--color-glass-inner':           'rgba(255, 255, 255, 0.4)',
+      '--color-btn-bg':                'rgba(255, 255, 255, 0.65)',
+      '--color-btn-border':            hsla(H, S * 0.5, 69, 0.5),
+      '--color-inset-bg':              'rgba(255, 255, 255, 0.5)',
+      '--color-inset-border':          hsla(H, S * 0.55, 63, 0.5),
+      '--color-social-bg':             hsla(H, S * 0.6, 65, 0.15),
+      '--color-social-border':         hsla(H, S * 0.6, 65, 0.3),
+      '--color-social-hover':          hsla(H, S * 0.6, 65, 0.3),
+      '--color-divider-top':           hsla(H, S * 0.5, 57, 0.3),
+      '--color-divider-bottom':        'rgba(255, 255, 255, 0.6)',
+      '--color-avatar-border':         hsla(H, S * 0.6, 65, 0.4),
+      '--color-avatar-shadow':         hsla(H, S * 0.55, 59, 0.25),
+      '--color-status-dot-border':     'rgba(255, 255, 255, 0.55)',
+      '--color-slider-track':          hsla(H, S * 0.5, 69, 0.3),
+      '--color-progress-bg':           hsla(H, S * 0.5, 69, 0.25),
+      '--color-progress-border':       hsla(H, S * 0.55, 63, 0.4),
+      '--color-ctrl-bg':               'rgba(255, 255, 255, 0.6)',
+      '--color-ctrl-border':           hsla(H, S * 0.5, 69, 0.5),
+      '--color-ctrl-hover':            hsla(H, S * 0.6, 65, 0.25),
+      '--color-radial-1':              hsla(H, S * 0.4, 89, 0.4),
+      '--color-radial-2':              hsla(H2, S * 0.45, 84, 0.3),
+      '--color-particle-star-shadow':  hsla(H3, S * 0.5, 60, 0.6),
+      '--color-particle-bubble-border': hsla(H2, S * 0.4, 70, 0.3),
+    };
+
+    const dark: Record<string, string> = {
+      '--color-bg':                    hsl(H, S * 0.5, 10),
+      '--color-grid':                  hsla(H, S * 0.6, 59, 0.12),
+      '--color-primary':               hsl(H, S * 0.55, 72),
+      '--color-secondary':             hsl(H, S * 0.55, 62),
+      '--color-body':                  hsl(H, S * 0.4, 60),
+      '--color-title-bar-start':       hsl(H, S * 0.45, 30),
+      '--color-title-bar-end':         hsl(H2, S * 0.4, 35),
+      '--color-glass-bg':              hsla(H, S * 0.4, 10, 0.75),
+      '--color-glass-border':          hsla(H, S * 0.55, 51, 0.35),
+      '--color-glass-shadow':          'rgba(0, 0, 0, 0.4)',
+      '--color-glass-inner':           hsla(H, S * 0.55, 51, 0.15),
+      '--color-btn-bg':                hsla(H, S * 0.35, 20, 0.65),
+      '--color-btn-border':            hsla(H, S * 0.55, 51, 0.5),
+      '--color-inset-bg':              hsla(H, S * 0.4, 8, 0.6),
+      '--color-inset-border':          hsla(H, S * 0.5, 43, 0.4),
+      '--color-social-bg':             hsla(H, S * 0.45, 30, 0.25),
+      '--color-social-border':         hsla(H, S * 0.5, 43, 0.3),
+      '--color-social-hover':          hsla(H, S * 0.5, 43, 0.4),
+      '--color-divider-top':           hsla(H, S * 0.5, 43, 0.3),
+      '--color-divider-bottom':        hsla(H, S * 0.55, 51, 0.15),
+      '--color-avatar-border':         hsla(H, S * 0.55, 55, 0.4),
+      '--color-avatar-shadow':         'rgba(0, 0, 0, 0.35)',
+      '--color-status-dot-border':     hsla(H, S * 0.4, 10, 0.75),
+      '--color-slider-track':          hsla(H, S * 0.5, 43, 0.35),
+      '--color-progress-bg':           hsla(H, S * 0.5, 43, 0.25),
+      '--color-progress-border':       hsla(H, S * 0.5, 43, 0.35),
+      '--color-ctrl-bg':               hsla(H, S * 0.35, 20, 0.6),
+      '--color-ctrl-border':           hsla(H, S * 0.55, 51, 0.4),
+      '--color-ctrl-hover':            hsla(H, S * 0.5, 43, 0.3),
+      '--color-radial-1':              hsla(H, S * 0.4, 18, 0.4),
+      '--color-radial-2':              hsla(H2, S * 0.35, 14, 0.3),
+      '--color-particle-star-shadow':  hsla(H3, S * 0.5, 50, 0.5),
+      '--color-particle-bubble-border': hsla(H2, S * 0.4, 55, 0.25),
+    };
+
+    return { light, dark };
+  }
+
+  async function applyRuntimePalette() {
+    try {
+      const res = await fetch('https://api.scryptica.cc/avatar/colors');
+      const data = await res.json();
+      if (!data.colors || data.colors.length < 3) return;
+
+      const { light, dark } = buildPalette(data.colors);
+      const isDark = document.documentElement.classList.contains('dark');
+      const palette = isDark ? dark : light;
+
+      // Apply as inline styles on :root (overrides the CSS file)
+      const root = document.documentElement;
+      for (const [key, value] of Object.entries(palette)) {
+        root.style.setProperty(key, value);
+      }
+
+      // Store both palettes for theme toggle transitions
+      (window as any).__lightPalette = light;
+      (window as any).__darkPalette = dark;
+    } catch {
+      // Silent fail — build-time palette remains as fallback
+    }
+  }
+
+  applyRuntimePalette();
 </script>

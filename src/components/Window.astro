@@ -1,9 +1,10 @@
 ---
 interface Props {
   title: string;
+  showThemeToggle?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, showThemeToggle = false } = Astro.props;
 ---
 
 <div class="window">
@@ -12,6 +13,12 @@ const { title } = Astro.props;
       <slot name="title">{title}</slot>
     </span>
     <div class="title-buttons">
+      {showThemeToggle && (
+        <div class="title-btn theme-toggle" role="button" aria-label="Toggle dark mode" tabindex="0">
+          <span class="toggle-icon light-icon">&#9788;</span>
+          <span class="toggle-icon dark-icon">&#9790;</span>
+        </div>
+      )}
       <div class="title-btn" aria-hidden="true">&#8722;</div>
       <div class="title-btn" aria-hidden="true">&#9633;</div>
       <div class="title-btn" aria-hidden="true">&#215;</div>
@@ -69,8 +76,38 @@ const { title } = Astro.props;
     color: var(--color-body);
   }
 
+  .theme-toggle {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .toggle-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: opacity 0.2s;
+  }
+
+  :global(:root) .dark-icon { opacity: 0; }
+  :global(:root) .light-icon { opacity: 1; }
+  :global(:root.dark) .dark-icon { opacity: 1; }
+  :global(:root.dark) .light-icon { opacity: 0; }
+
   .window-body {
     padding: 24px;
   }
 
 </style>
+
+<script>
+  const toggle = document.querySelector('.theme-toggle');
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      window.dispatchEvent(new Event('theme:toggle'));
+    });
+  }
+</script>
